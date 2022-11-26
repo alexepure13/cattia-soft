@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/pageheader :: head"></head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <div th:replace="fragment/navmenu :: navmenu(selctedNavItem='navProductOverview')"/>
+
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Stock Management</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                            <li class="breadcrumb-item active">Stock Management</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content">
+
+            <div class="container-fluid">
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Product Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <dl class="row">
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Code:</dt>
+                                        <dd class="col-lg-8" th:text="${product.code}"/>
+                                    </div>
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Name:</dt>
+                                        <dd class="col-lg-8" th:text="${product.name}"/>
+                                    </div>
+                                </dl>
+                            </div>
+                            <div class="col-lg-6">
+                                <dl class="row">
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Category:</dt>
+                                        <dd class="col-lg-8" th:text="${product.category}"/>
+                                    </div>
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Available quantity:</dt>
+                                        <dd class="col-lg-8" th:text="${product.availableQuantity} + ' ' +  ${product.unitOfMeasurement}"/>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card card-primary card-outline">
+                    <div th:switch="${formAction.name}">
+                        <div th:case="'ADD'" class="card-header">
+                            <h3 class="card-title font-weight-bold">Add product to stock</h3>
+                        </div>
+                        <div th:case="'REMOVED'" class="card-header">
+                            <h3 class="card-title font-weight-bold">Withdraw product from stock</h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="#" th:action="@{/saveProductStock}" th:object="${product}" method="post">
+                            <input class="d-none" readonly th:field="*{id}" type="text">
+                            <input class="d-none" readonly th:value="${formAction}" th:attr="name='formAction'" type="text">
+                            <div class="form-group row col-lg-12">
+                                <div class="col-lg-2">
+                                    <input class="form-control" th:field="*{quantity}" type="text">
+                                </div>
+                                <div th:switch="${formAction.name}">
+                                    <div th:case="'ADD'">
+                                        <button class="btn btn-primary" type="submit">Add to stock</button>
+                                    </div>
+                                    <div th:case="'REMOVED'">
+                                        <button class="btn btn-danger" type="submit">Remove from stock</button>
+                                    </div>
+                                </div>
+                                <div class="text-danger col-lg-5 align-self-center" th:text="${orderErrorMessage}"></div>
+
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Stock history</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-10">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Created on</th>
+                                        <th>Created by</th>
+                                        <th>Action</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="productStockHistory : ${product.productStockHistoryList}">
+                                        <td th:text="${productStockHistory.createdOn}"/>
+                                        <td th:text="${productStockHistory.createdBy}"/>
+                                        <td th:switch="${productStockHistory.action.name}">
+                                            <span th:case="'ADD'">
+                                                <span class="badge badge-primary" th:text="${productStockHistory.action}"></span>
+                                            </span>
+                                            <span th:case="'REMOVED'">
+                                                <span class="badge badge-danger" th:text="${productStockHistory.action}"></span>
+                                            </span>
+                                            <span th:case="'ORDERED'">
+                                                <span class="badge badge-info" th:text="${productStockHistory.action}"></span>
+                                            </span>
+                                        </td>
+                                        <td th:switch="${productStockHistory.action.name}">
+                                            <span th:case="'ADD'">
+                                                <span th:text="${productStockHistory.quantity}"></span>
+                                            </span>
+                                            <span th:case="'REMOVED'">
+                                                <span class="text-danger" th:text="'-'+${productStockHistory.quantity}"></span>
+                                            </span>
+                                            <span th:case="'ORDERED'">
+                                                <span class="text-danger" th:text="'-'+${productStockHistory.quantity}"></span>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+    <div th:replace="fragment/copyright :: copyright"/>
+
+</div>
+
+<div th:replace="fragment/pagefooter :: pagefooter"/>
+
+</body>
+</html>

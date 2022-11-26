@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/pageheader :: head"></head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <div th:replace="fragment/navmenu :: navmenu(selctedNavItem='navProductForm')"/>
+
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Product Management</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                            <li class="breadcrumb-item active">Product Form</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content">
+            <form action="#" th:action="@{/submitProduct}" th:object="${product}" method="post">
+                <input class="d-none" readonly th:value="${formAction}" th:attr="name='formAction'" type="text">
+                <input class="d-none" readonly th:field="*{id}" type="text">
+
+                <div class="container-fluid">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Product Data</h3>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label" for="code">Product code:</label>
+                                        <div class="col-lg-4">
+                                            <input class="form-control" th:field="*{code}" type="text">
+                                        </div>
+                                        <div class="col-lg-5 align-self-center" th:class="text-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label" for="name">Product name:</label>
+                                        <div class="col-lg-4">
+                                            <input class="form-control" th:field="*{name}" type="text">
+                                        </div>
+                                        <div class="col-lg-5 align-self-center" th:class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label" for="idCategory">Category:</label>
+                                        <div class="col-lg-4">
+                                            <select class="selectpicker form-control" id="idCategory" th:field="${product.category}">
+                                                <option th:each="category : ${categoryList}" th:value="${category}" th:text="${category.value}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-5 align-self-center" th:class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label" for="idUnitOfMeasurement">Unit of measurement:</label>
+                                        <div class="col-lg-4">
+                                            <select class="selectpicker form-control" id="idUnitOfMeasurement" th:field="${product.unitOfMeasurement}">
+                                                <option th:each="unitOfMeasurement : ${unitOfMeasurementList}" th:value="${unitOfMeasurement}" th:text="${unitOfMeasurement.value}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-5 align-self-center" th:class="text-danger" th:if="${#fields.hasErrors('unitOfMeasurement')}" th:errors="*{unitOfMeasurement}"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-body">
+                    <div class="=row">
+                        <button class="btn btn-primary mr-2" type="submit" name="action" value="saveProductFormAndGoToOverview">Save</button>
+                        <button class="btn btn-outline-primary" type="submit" name="action" value="exitWithoutSavingProductForm">Back</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+    <div th:replace="fragment/copyright :: copyright"/>
+
+</div>
+
+<div th:replace="fragment/pagefooter :: pagefooter"/>
+
+</body>
+</html>

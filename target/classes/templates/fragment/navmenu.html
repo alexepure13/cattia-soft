@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<div th:fragment="navmenu">
+
+
+    <nav class="main-header navbar navbar-expand navbar-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a th:href="@{/index}" class="nav-link">Home</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link" data-toggle="dropdown">
+                    <img th:src="@{../dist/img/avatar/048.png}" class="userAccount-image img-circle img-size-32"
+                         alt="User Image">
+                    <span sec:authentication="principal.username" class="hidden-xs">Username</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="row">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-userAccount-img img-fluid img-circle"
+                                     th:src="@{../dist/img/avatar/048.png}"
+                                     alt="User profile picture">
+                            </div>
+                            <h3 sec:authentication="principal.fullName" class="profile-username text-center">John Smith</h3>
+                            <h3  sec:authentication="principal.username" class="profile-username text-center">johnsmith</h3>
+                            <p  sec:authentication="principal.role" class="text-muted text-center">ADMIN</p>
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <div class="float-left">
+                                        <!-- //TODO To implement
+                                        <form name="f" th:action="@{/profile}" method="get">
+                                            <button type="submit" class="btn btn-primary">Profile</button>
+                                        </form>
+                                        -->
+                                    </div>
+
+                                    <div class="float-right">
+                                        <form name="f" th:action="@{/logout}" method="post">
+                                            <button type="submit" class="btn btn-primary">Log Out</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a th:href="@{/index}" class="brand-link">
+            <i class="bi bi-chat-square-heart"></i><img th:src="@{../dist/img/AdminLTELogo.png}" alt="Oranje Logo"
+                                                        class="brand-image img-circle elevation-3" style="opacity: .8">
+            <span class="brand-text"><b>Cattia</b> Soft</span>
+        </a>
+
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    data-accordion="false">
+                    <li class="form-inline">
+                        <span class="nav-header">MAIN NAVIGATION</span>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/index}" class="nav-link" th:classappend="${selctedNavItem=='navIndex'}? active">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item"
+                        th:classappend="${selctedNavItem=='navRefugeeOverview' || selctedNavItem=='navRefugeeForm'}? menu-open">
+                        <a href="#" class="nav-link"
+                           th:classappend="${selctedNavItem=='navRefugeeOverview' || selctedNavItem=='navRefugeeForm'}? active">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>
+                                Refugees
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/refugeeOverview}" class="nav-link"
+                                   th:classappend="${selctedNavItem=='navRefugeeOverview'}? active">
+                                    <i class="nav-icon far fa-circle text-primary"></i>
+                                    <p>Overview</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/createRefugee}" class="nav-link"
+                                   th:classappend="${selctedNavItem=='navRefugeeForm'}? active">
+                                    <i class="nav-icon far fa-circle text-primary"></i>
+                                    <p>New refugee</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item"
+                        th:classappend="${selctedNavItem=='navProductOverview' || selctedNavItem=='navProductForm'}? menu-open">
+                        <a href="#" class="nav-link"
+                           th:classappend="${selctedNavItem=='navProductOverview' || selctedNavItem=='navProductForm'}? active">
+                            <i class="nav-icon fa fa-cart-arrow-down"></i>
+                            <p>
+                                Warehouse
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/productOverview}" class="nav-link"
+                                   th:classappend="${selctedNavItem=='navProductOverview'}? active">
+                                    <i class="nav-icon far fa-circle text-primary"></i>
+                                    <p>Product Overview</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/createProduct}" class="nav-link"
+                                   th:classappend="${selctedNavItem=='navProductForm'}? active">
+                                    <i class="nav-icon far fa-circle text-primary"></i>
+                                    <p>Add new product</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item"
+                        th:classappend="${selctedNavItem=='navUserAccountOverview' || selctedNavItem=='navUserForm'}? menu-open">
+                        <a href="#" class="nav-link"
+                           th:classappend="${selctedNavItem=='navUserAccountOverview' || selctedNavItem=='navUserForm'}? active">
+                            <i class="nav-icon fa fa-user"></i>
+                            <p>
+                                Administration
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/userAccountOverview}" class="nav-link"
+                                   th:classappend="${selctedNavItem=='navUserAccountOverview'}? active">
+                                    <i class="nav-icon far fa-circle text-primary"></i>
+                                    <p>User Account Overview</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/userAccountForm}" class="nav-link"
+                                   th:classappend="${selctedNavItem=='navUserForm'}? active">
+                                    <i class="nav-icon far fa-circle text-primary"></i>
+                                    <p>Add New User</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a th:href="@{/licence}" class="nav-link"
+                           th:classappend="${selctedNavItem=='navLicence'}? active">
+                            <i class="nav-icon fas fa-file-contract"></i>
+                            <p>Licence</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+</div>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="EugenBarbu" id="1.0.0">
+        <createTable tableName="T_ROLE">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ROLE" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- TABLE T_PERMISSION -->
+        <createTable tableName="T_PERMISSION">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="PERMISSION" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- TABLE T_ROLE_PERMISSION -->
+        <createTable tableName="T_ROLE_PERMISSION">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ID_ROLE" type="bigint">
+                <constraints nullable="false" foreignKeyName="FK_ID_RP_ROLE" references="T_ROLE(ID)"/>
+            </column>
+            <column name="ID_PERMISSION" type="bigint">
+                <constraints nullable="false" foreignKeyName="FK_ID_RP_PERMISSION" references="T_PERMISSION(ID)"/>
+            </column>
+        </createTable>
+
+        <!-- TABLE T_USERACCOUNT -->
+        <createTable tableName="T_USERACCOUNT">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ACTIVE" type="number" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" type="varchar(50)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="varchar(255)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRSTNAME" type="varchar(255)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LASTNAME" type="varchar(255)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="varchar(255)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ID_ROLE" type="int">
+                <constraints nullable="false" foreignKeyName="FK_ID_ROLE" references="T_ROLE(ID)"/>
+            </column>
+        </createTable>
+
+        <!-- TABLE T_REFUGEE -->
+        <createTable tableName="t_refugee">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="1" name="ACTIVE" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="datetime"/>
+            <column name="identification_number" type="VARCHAR(10)"/>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+        </createTable>
+
+        <!-- TABLE t_stock_history -->
+        <createTable tableName="t_stock_history">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_on" type="datetime"/>
+            <column name="id_user" type="BIGINT"/>
+            <column name="action" type="varchar(10)"/>
+            <column name="quantity" type="decimal(8, 4)"/>
+            <column name="id_product" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="id_user"
+                                 baseTableName="t_stock_history"
+                                 constraintName="fk_id_user_stock_history"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_useraccount"/>
+
+        <!-- TABLE t_product -->
+        <createTable tableName="t_product">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="1" name="ACTIVE" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="datetime"/>
+            <column name="id_user" type="BIGINT"/>
+            <column name="code" type="VARCHAR(6)"/>
+            <column name="name" type="VARCHAR(50)"/>
+            <column name="category" type="VARCHAR(30)"/>
+            <column name="unit_of_measurement" type="VARCHAR(20)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="id_user"
+                                 baseTableName="t_product"
+                                 constraintName="fk_id_user_product"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_useraccount"/>
+
+        <addForeignKeyConstraint baseColumnNames="id_product"
+                                 baseTableName="t_stock_history"
+                                 constraintName="fk_id_stock_history"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_product"/>
+
+        <createTable tableName="t_refugee_order">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_on" type="datetime"/>
+            <column name="id_user" type="BIGINT"/>
+            <column name="order_number" type="VARCHAR(8)"/>
+            <column name="status" type="VARCHAR(10)"/>
+            <column name="id_refugee" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="id_user"
+                                 baseTableName="t_refugee_order"
+                                 constraintName="fk_id_user_refugee_order"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_refugee_order"/>
+
+        <createTable tableName="t_order_item">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="id_order" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_product" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="decimal(8, 4)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="id_refugee"
+                                 baseTableName="t_refugee_order"
+                                 constraintName="fk_id_refugee_order"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_refugee"/>
+
+        <addForeignKeyConstraint baseColumnNames="id_order"
+                                 baseTableName="t_order_item"
+                                 constraintName="fk_id_order_item"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_refugee_order"/>
+
+        <addForeignKeyConstraint baseColumnNames="id_product"
+                                 baseTableName="t_order_item"
+                                 constraintName="fk_id_product"
+                                 referencedColumnNames="id"
+                                 referencedTableName="t_product"/>
+    </changeSet>
+
+    <include file="classpath:db/liquibase/db.changelog-1.0.0.sql"/>
+
+</databaseChangeLog>

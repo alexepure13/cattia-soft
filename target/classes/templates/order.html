@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/pageheader :: head"></head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <div th:replace="fragment/navmenu :: navmenu(selctedNavItem='navRefugeeOverview')"/>
+
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Product order</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                            <li class="breadcrumb-item active">Product order</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content">
+
+            <div class="container-fluid">
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Refugee Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <dl class="row">
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Identification number:</dt>
+                                        <dd class="col-lg-8" th:text="${refugeeOrder.identificationNumber}"/>
+                                    </div>
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Firstname:</dt>
+                                        <dd class="col-lg-8" th:text="${refugeeOrder.firstName}"/>
+                                    </div>
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Lastname:</dt>
+                                        <dd class="col-lg-8" th:text="${refugeeOrder.lastName}"/>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Open order</h3>
+                    </div>
+                    <div class="card-body">
+
+                        <div th:if="${#lists.isEmpty(refugeeOrder.openOrder.orderedItems)}" >
+                            <div class="form-group row col-lg-12">
+                                <button class="btn btn-secondary" role="button" disabled>Confirm order</button>
+                                <span class="col-6 align-self-center">Add at leas an item to confirm the order</span>
+                            </div>
+                        </div>
+
+                        <div th:unless="${#lists.isEmpty(refugeeOrder.openOrder.orderedItems)}" >
+                            <form action="#" th:action="@{/confirmOrder}" method="post">
+                                <input class="d-none" readonly th:field="${refugeeOrder.id}" type="text">
+                                <div class="form-group row col-lg-12">
+                                    <button class="btn btn-primary" type="submit" name="action">Confirm order</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 text-danger align-self-center" th:text="${orderErrorMessage}"></div>
+                        </div>
+                        <div class="row" th:each="stockValidationError : ${stockValidationErrors}">
+                            <div class="col-12 text-danger align-self-center" th:text="${stockValidationError.toMessage()}"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Product code</th>
+                                        <th>Product name</th>
+                                        <th>Category</th>
+                                        <th>U.M.</th>
+                                        <th>Quantity</th>
+                                        <th>Available quantity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="openOrderItem : ${refugeeOrder.openOrder.orderedItems}">
+                                        <td th:text="${openOrderItem.code}"/>
+                                        <td th:text="${openOrderItem.name}"/>
+                                        <td th:text="${openOrderItem.category}"/>
+                                        <td th:text="${openOrderItem.unitOfMeasurement}"/>
+                                        <td>
+                                            <form th:action="@{/saveOrderItem}" th:object=${openOrderItem} method="post" style="display: inline-block;">
+                                                <div class="input-group mb-3">
+                                                    <input class="d-none" name="orderItemId" th:value="*{id}">
+                                                    <input class="d-none" name="orderId" th:value="*{orderId}">
+                                                    <input type="text" class="form-control" th:id="openOrderItemQuantity" th:name="openOrderItemQuantity"
+                                                           th:value="${openOrderItem.quantity}"/>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-success btn-sm" th:id="'btn_saveOrderItem_' + ${openOrderItem.id}"
+                                                                type="submit" title="Save item to order"><i class="fa fa-check"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td th:text="${openOrderItem.availableQuantity}"/>
+
+                                        <td style="white-space: nowrap">
+                                            <form th:action="@{/removeOrderItem}" th:object=${openOrderItem} method="post" style="display: inline-block;">
+                                                <input class="d-none" name="orderItemId" th:value="*{id}">
+                                                <button class="btn btn-danger btn-sm" th:id="'btn_removeOrderItem_' + ${openOrderItem.id}"
+                                                        type="submit" title="Remove product from order"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Add products to order</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="dataTables_wrapper dt-bootstrap4">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="datatable" class="table table-bordered table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>Product Code</th>
+                                            <th>Product Name</th>
+                                            <th>Category</th>
+                                            <th>U.M.</th>
+                                            <th>Available quantity</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="product : ${productList}">
+                                            <td th:text="${product.code}"/>
+                                            <td th:text="${product.name}"/>
+                                            <td th:text="${product.category.value}"/>
+                                            <td th:text="${product.unitOfMeasurement}"/>
+                                            <td th:text="${product.quantity}"/>
+                                            <td style="white-space: nowrap">
+                                                <form th:action="@{/saveToOrder}" th:object=${product} method="post" style="display: inline-block;">
+                                                    <input class="d-none" name="orderId" th:value="${refugeeOrder.id}">
+                                                    <input class="d-none" name="refugeeId" th:value="${refugeeOrder.refugeeId}">
+                                                    <input class="d-none" name="productId" th:value="*{id}">
+                                                    <button class="btn btn-danger btn-sm" th:id="'btn_orderItem_' + ${product.id}"
+                                                            type="submit" title="Add product to order"><i class="fa fa-arrow-up"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div th:replace="fragment/copyright :: copyright"/>
+
+</div>
+
+<div th:replace="fragment/pagefooter :: pagefooter"/>
+
+<script th:src="@{/custom/js/numberSpinner.js}"
+        src="/custom/js/numberSpinner.js"></script>
+
+</body>
+</html>

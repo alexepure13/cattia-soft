@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="fragment/pageheader :: head"></head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <div th:replace="fragment/navmenu :: navmenu(selctedNavItem='navUserAccountOverview')"/>
+
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">User Account Overview</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                            <li class="breadcrumb-item active">User Account Overview</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">User Account Overview</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="dataTables_wrapper dt-bootstrap4">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table id="datatable" class="table table-bordered table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>First Name</th>
+                                                    <th>Last Name</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="userAccount : ${userAccountList}">
+                                                    <td th:text="${userAccount.username}"/>
+                                                    <td th:text="${userAccount.firstName}"/>
+                                                    <td th:text="${userAccount.lastName}"/>
+                                                    <td th:text="${userAccount.email}"/>
+                                                    <td th:text="${userAccount.role}"/>
+                                                    <td><span class="badge" th:classappend="${userAccount.status.cssClass}" th:text="${userAccount.status.value}"></span></td>
+                                                    <td style="white-space: nowrap">
+                                                        <form th:action="@{/editUserAccount}" th:object=${userAccount} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="userAccountId" th:value="*{id}">
+                                                            <button class="btn btn-primary btn-sm" th:id="'btn_editUserAccount_' + ${userAccount.id}"
+                                                                    type="submit" title="Edit user account"><i class="fas fa-edit"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <form th:action="@{/editPassword}" th:object=${userAccount} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="userAccountId" th:value="*{id}">
+                                                            <button class="btn btn-secondary btn-sm" th:id="'btn_editPassword_' + ${userAccount.id}"
+                                                                    type="submit" title="Edit user account password"><i class="fas fa-user-lock"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <form th:if="${userAccount.status.name() == 'ACTIVE' }" th:action="@{/deactivateUserAccount}" th:object=${userAccount} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="userAccountId" th:value="*{id}">
+                                                            <button class="btn btn-danger btn-sm" th:id="'btn_delete_' + ${userAccount.id}"
+                                                                    type="submit" title="Deactivate user account"><i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <form th:if="${userAccount.status.name() == 'INACTIVE' }" th:action="@{/activateUserAccount}" th:object=${userAccount} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="userAccountId" th:value="*{id}">
+                                                            <button class="btn btn-success btn-sm" th:id="'btn_reactivate_' + ${userAccount.id}"
+                                                                    type="submit" title="Reactivate user account"><i class="fa fa-check"></i>
+                                                            </button>
+                                                        </form>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>First Name</th>
+                                                    <th>Last Name</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="deleteModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm disable</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to disable this record?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="" class="btn btn-primary" id="delRef">Yes, disable</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="enableModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm enable</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to enable this record?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="" class="btn btn-primary" id="enbRef">Yes, Enable</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragment/copyright :: copyright"/>
+</div>
+
+<div th:replace="fragment/pagefooter :: pagefooter"/>
+
+<script>
+    $('document').ready(function () {
+
+        $('.table #deleteButton').on('click', function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $('#deleteModal #delRef').attr('href', href);
+            $('#deleteModal').modal();
+
+        });
+
+    });
+</script>
+
+<script>
+    $('document').ready(function () {
+
+        $('.table #enableButton').on('click', function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $('#enableModal #enbRef').attr('href', href);
+            $('#enableModal').modal();
+        });
+
+    });
+</script>
+
+<script th:inline="javascript">
+    var alertVisible = [[${alert.visible}]];
+    var alertType = [[${alert.type}]];
+    var alertMessage = [[${alert.message}]];
+</script>
+
+
+<script th:src="@{/custom/js/custom-toast.js}"
+        src="/custom/js/custom-toast.js"></script>
+
+
+</body>
+</html>

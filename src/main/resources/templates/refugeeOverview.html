@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/pageheader :: head"></head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <div th:replace="fragment/navmenu :: navmenu(selctedNavItem='navRefugeeOverview')"/>
+
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Refugee Management</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                            <li class="breadcrumb-item active">Refugee Overview</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Refugee overview</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="dataTables_wrapper dt-bootstrap4">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table id="datatable" class="table table-bordered table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th>Refugee Number</th>
+                                                    <th>Status</th>
+                                                    <th>Name</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="refugee : ${refugeeList}">
+                                                    <td th:text="${refugee.identificationNumber}"/>
+                                                    <td><span class="badge" th:classappend="${refugee.status.cssClass}" th:text="${refugee.status.value}"></span></td>
+                                                    <td th:text="${refugee.getFullName()}"/>
+                                                    <td style="white-space: nowrap">
+                                                        <form th:action="@{/editRefugee}" th:object=${refugee} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="refugeeId" th:value="*{id}">
+                                                            <button class="btn btn-primary btn-sm" th:id="'btn_detail_' + ${refugee.id}"
+                                                                    type="submit" title="Edit Refugee Information"><i class="fas fa-edit"></i>
+                                                            </button>
+                                                        </form>
+                                                        <form th:action="@{/assignProducts}" th:object=${refugee} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="refugeeId" th:value="*{id}">
+                                                            <button class="btn btn-primary btn-sm" th:id="'btn_assign_product_' + ${refugee.id}"
+                                                                    name="action" value="assignProducts"
+                                                                    type="submit" title="Assign products to refugee"><i class="fa fa-shopping-basket"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <form th:if="${refugee.status.name() == 'ACTIVE' }" th:action="@{/deactivateRefugee}" th:object=${refugee} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="refugeeId" th:value="*{id}">
+                                                            <button class="btn btn-danger btn-sm" th:id="'btn_delete_' + ${refugee.id}"
+                                                                    type="submit" title="Deactivate refugee"><i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <form th:if="${refugee.status.name() == 'INACTIVE' }" th:action="@{/activateRefugee}" th:object=${refugee} method="post" style="display: inline-block;">
+                                                            <input class="d-none" name="refugeeId" th:value="*{id}">
+                                                            <button class="btn btn-success btn-sm" th:id="'btn_reactivate_' + ${refugee.id}"
+                                                                    type="submit" title="Reactivate refugee"><i class="fa fa-check"></i>
+                                                            </button>
+                                                        </form>
+
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <th>Refugee Number</th>
+                                                    <th>Status</th>
+                                                    <th>Name</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div th:replace="fragment/copyright :: copyright"/>
+</div>
+
+<div th:replace="fragment/pagefooter :: pagefooter"/>
+
+<script th:inline="javascript">
+    var alertVisible = [[${alert.visible}]];
+    var alertType = [[${alert.type}]];
+    var alertMessage = [[${alert.message}]];
+</script>
+
+<script th:src="@{/custom/js/custom-toast.js}"
+        src="/custom/js/custom-toast.js"></script>
+
+</body>
+</html>

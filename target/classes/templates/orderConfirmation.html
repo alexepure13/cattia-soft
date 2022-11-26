@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/pageheader :: head"></head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <div th:replace="fragment/navmenu :: navmenu(selctedNavItem='navRefugeeOverview')"/>
+
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Order confirmation</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                            <li class="breadcrumb-item active">Order confirmation</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content">
+
+            <div class="container-fluid">
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Refugee Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <dl class="row">
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Identification number:</dt>
+                                        <dd class="col-lg-8" th:text="${refugeeOrderConfirmation.identificationNumber}"/>
+                                    </div>
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Firstname:</dt>
+                                        <dd class="col-lg-8" th:text="${refugeeOrderConfirmation.firstName}"/>
+                                    </div>
+                                    <div class="row col-lg-12">
+                                        <dt class="col-lg-4 text-right">Lastname:</dt>
+                                        <dd class="col-lg-8" th:text="${refugeeOrderConfirmation.lastName}"/>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-bold">Order # <span th:text="${refugeeOrderConfirmation.completedOrder.orderNumber}"/> completed successfully</h3>
+                    </div>
+                    <div class="card-body">
+
+                        <form th:action="@{/refugeeOverview}" method="get">
+                            <div class="form-group row col-lg-12">
+                                <button class="btn btn-primary" type="submit" name="action">Close</button>
+                            </div>
+                        </form>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Product code</th>
+                                        <th>Product name</th>
+                                        <th>Category</th>
+                                        <th>U.M.</th>
+                                        <th>Quantity</th>
+                                        <th>Available quantity</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="openOrderProduct : ${refugeeOrderConfirmation.completedOrder.orderedItems}">
+                                        <td th:text="${openOrderProduct.code}"/>
+                                        <td th:text="${openOrderProduct.name}"/>
+                                        <td th:text="${openOrderProduct.category}"/>
+                                        <td th:text="${openOrderProduct.unitOfMeasurement}"/>
+                                        <td th:text="${openOrderProduct.quantity}"/>
+                                        <td th:text="${openOrderProduct.availableQuantity.subtract(openOrderProduct.quantity)}"/>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+    <div th:replace="fragment/copyright :: copyright"/>
+
+</div>
+
+<div th:replace="fragment/pagefooter :: pagefooter"/>
+
+<script th:src="@{/custom/js/numberSpinner.js}"
+        src="/custom/js/numberSpinner.js"></script>
+
+</body>
+</html>
